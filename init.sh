@@ -18,9 +18,9 @@ fi
 if [ "$OFFLINE_MODE" = "TRUE" ]; then 
   echo " === Offline mode is enabled. Will try to launch from local files. Checking for local version..."
   if [ -f /usr/local/apache2/htdocs/package.json ]; then
-    VERSION=$(jq -r .version package.json) # Get version from package.json
+    VERSION=$(jq -r .version /usr/local/apache2/htdocs/package.json) # Get version from package.json
     echo " === Starting version $VERSION"
-    httpd-foreground
+    exec httpd-foreground
   else
     echo " === No local version detected. Exiting."
     exit 1
@@ -66,4 +66,4 @@ fi
 
 echo " === Starting version $VERSION"
 
-httpd-foreground
+exec httpd-foreground

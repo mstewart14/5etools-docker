@@ -27,8 +27,6 @@ is_httpd_running() {
 start_httpd() {
   if is_httpd_running; then
     echo " === Apache httpd is already running"
-    # Keep the script alive to maintain the container
-    # tail -f /dev/null
     exit 1
   else
     echo " === Starting Apache httpd"

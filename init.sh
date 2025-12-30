@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Print current user ID
 id
 
@@ -7,9 +6,35 @@ id
 chown -R $PUID:$PGID /usr/local/apache2/htdocs
 
 # Delete index.html if it's the stock apache file. Otherwise it impedes the git clone.
-if grep -Fq '<html><body><h1>It works!</h1></body></html>' "/usr/local/apache2/htdocs/index.html"; then
+if grep -Fq '<html><body><h1>It works!</h1></body></html>' "/usr/local/apache2/htdocs/index.html" 2>/dev/null; then
   rm /usr/local/apache2/htdocs/index.html
 fi
+
+# Function to check if httpd is running using /proc
+is_httpd_running() {
+  for pid in /proc/[0-9]*; do
+    if [ -f "$pid/comm" ]; then
+      cmdname=$(cat "$pid/comm" 2>/dev/null)
+      if [ "$cmdname" = "httpd" ]; then
+        return 0  # httpd is running
+      fi
+    fi
+  done
+  return 1  # httpd is not running
+}
+
+# Function to start httpd if not already running
+start_httpd() {
+  if is_httpd_running; then
+    echo " === Apache httpd is already running"
+    # Keep the script alive to maintain the container
+    # tail -f /dev/null
+    exit 1
+  else
+    echo " === Starting Apache httpd"
+    exec httpd-foreground
+  fi
+}
 
 # If the user doesn't want to update from a source, 
 # check for local version.
@@ -19,8 +44,8 @@ if [ "$OFFLINE_MODE" = "TRUE" ]; then
   echo " === Offline mode is enabled. Will try to launch from local files. Checking for local version..."
   if [ -f /usr/local/apache2/htdocs/package.json ]; then
     VERSION=$(jq -r .version /usr/local/apache2/htdocs/package.json) # Get version from package.json
-    echo " === Starting version $VERSION"
-    exec httpd-foreground
+    echo " === Checking httpd process and starting version $VERSION"
+    start_httpd
   else
     echo " === No local version detected. Exiting."
     exit 1
@@ -28,6 +53,7 @@ if [ "$OFFLINE_MODE" = "TRUE" ]; then
 fi
 
 # Move to the working directory for working with files.
+
 cd /usr/local/apache2/htdocs
 
 echo " === Checking directory permissions for /usr/local/apache2/htdocs"
@@ -35,18 +61,18 @@ ls -ld /usr/local/apache2/htdocs
 
 DL_LINK=${DL_LINK:-https://github.com/5etools-mirror-2/5etools-mirror-2.github.io.git}
 IMG_LINK=${IMG_LINK:-https://github.com/5etools-mirror-2/5etools-img}
-
 echo " === Using GitHub mirror at $DL_LINK"
+
 if [ ! -d "./.git" ]; then # if no git repository already exists
     echo " === No existing git repository, creating one"
     git config --global user.email "autodeploy@localhost"
     git config --global user.name "AutoDeploy"
     git config --global pull.rebase false # Squelch nag message
-    git config --global --add safe.directory '/usr/local/apache2/htdocs' # Disable directory ownership checking, required for mounted volumes
+    git config --global --add safe.directory '/usr/local/apache2/htdocs' # Disable directory ownership checking, required>
     git clone $DL_LINK . # clone the repo with no files and no object history
 else
     echo " === Using existing git repository"
-    git config --global --add safe.directory '/usr/local/apache2/htdocs' # Disable directory ownership checking, required for mounted volumes
+    git config --global --add safe.directory '/usr/local/apache2/htdocs' # Disable directory ownership checking, required>
 fi
 
 if [[ "$IMG" == "TRUE" ]]; then # if user wants images
@@ -58,12 +84,12 @@ echo " === Pulling latest files from GitHub..."
 git checkout
 git fetch
 git pull --depth=1
-VERSION=$(jq -r .version package.json) # Get version from package.json
 
+VERSION=$(jq -r .version /usr/local/apache2/htdocs/package.json) # Get version from package.json
 if [[ `git status --porcelain` ]]; then
     git restore .
 fi
 
 echo " === Starting version $VERSION"
 
-exec httpd-foreground
+start_httpd

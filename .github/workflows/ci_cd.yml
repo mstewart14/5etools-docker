@@ -65,4 +65,4 @@ jobs:
         with: 
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }} 
-          repository: jafner/5etools-docker
+          repository: mstewart14/5etools-docker

@@ -44,7 +44,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: mstewart14/5etools-docker
-          tags: mstewart14/5etools-docker:latest
+          tags: ghcr.io/${{ github.repository }}:latest
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@master

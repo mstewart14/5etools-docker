@@ -37,7 +37,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ vars.MY_USER }}
           password: ${{ secrets.MY_TOKEN }}     
       - name: Extract metadata (tags, labels) for Docker
         id: meta

@@ -44,10 +44,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: mstewart14/5etools-docker
-          tags: |
-            latest
-            type=edge
-            type=sha
+          tags: mstewart14/5etools-docker:latest
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@master

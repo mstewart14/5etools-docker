@@ -1,8 +1,7 @@
-version: "3"
 services:
   5etools-docker:
     container_name: 5etools-docker
-    image: jafner/5etools-docker
+    image: mstewart14/5etools-docker
     volumes:
       - ~/5etools-docker/htdocs:/usr/local/apache2/htdocs
     ports:

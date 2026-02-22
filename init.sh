@@ -37,6 +37,7 @@ DL_LINK=${DL_LINK:-https://github.com/5etools-mirror-2/5etools-mirror-2.github.i
 IMG_LINK=${IMG_LINK:-https://github.com/5etools-mirror-2/5etools-img}
 
 echo " === Using GitHub mirror at $DL_LINK"
+(
 if [ ! -d "./.git" ]; then # if no git repository already exists
     echo " === No existing git repository, creating one"
     git config --global user.email "autodeploy@localhost"
@@ -55,6 +56,7 @@ if [[ "$IMG" == "TRUE" ]]; then # if user wants images
 fi
 
 echo " === Pulling latest files from GitHub..."
+
 git checkout
 git fetch
 git pull --depth=1
@@ -63,7 +65,7 @@ VERSION=$(jq -r .version package.json) # Get version from package.json
 if [[ `git status --porcelain` ]]; then
     git restore .
 fi
-
+)
 echo " === Starting version $VERSION"
 
 httpd-foreground

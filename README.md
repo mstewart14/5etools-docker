@@ -1,4 +1,4 @@
-This is a simple image for hosting your own 5eTools instance. It is based on the Apache `httpd` image and uses components of the auto-updater script from the [5eTools wiki](https://wiki.tercept.net/en/5eTools/InstallGuide). This image is built from [this GitHub repository](https://github.com/Jafner/5etools-docker). 
+This is a simple image for hosting your own 5eTools instance. It is based on the Apache `httpd` image and uses components of the auto-updater script from the [5eTools wiki](https://wiki.tercept.net/en/5eTools/InstallGuide). This image was originally built from [this GitHub repository](https://github.com/Jafner/5etools-docker). It was updated to Alpine with improvements to the init.sh by (Sakujakira)[https://github.com/Sakujakira/5etools-docker/tree/alpine] using Claude.  
 
 # Usage
 Below we talk about how to install and configure the container. 
@@ -8,7 +8,7 @@ You can quick-start this image by running:
 
 ```
 mkdir -p ~/5etools-docker/htdocs && cd ~/5etools-docker
-curl -o docker-compose.yml https://raw.githubusercontent.com/Jafner/5etools-docker/main/docker-compose.yml
+curl -o docker-compose.yml https://raw.githubusercontent.com/mstewar14/5etools-docker/main/docker-compose.yml
 docker-compose up -d && docker logs -f 5etools-docker
 ```
 
